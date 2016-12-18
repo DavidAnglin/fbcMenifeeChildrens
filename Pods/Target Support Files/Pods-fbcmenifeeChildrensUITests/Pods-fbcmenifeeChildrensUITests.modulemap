@@ -1,0 +1,6 @@
+framework module Pods_fbcmenifeeChildrensUITests {
+  umbrella header "Pods-fbcmenifeeChildrensUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}
