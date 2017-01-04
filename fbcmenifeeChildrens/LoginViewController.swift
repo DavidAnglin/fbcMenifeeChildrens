@@ -15,6 +15,10 @@ class LoginViewController: UIViewController {
         fileprivate static let forgotPasswordMessage = " Please enter email to reset password."
         fileprivate static let sendEmail = "Send Email"
         fileprivate static let cancel = "Cancel"
+        
+        fileprivate static let confirmRegistrationTitle = "Confirm FBC Menifee Servant"
+        fileprivate static let confirmRegistrationMessage = "Please enter registration code"
+        fileprivate static let submit = "Submit"
     }
     
     // Private Constants
@@ -36,6 +40,7 @@ class LoginViewController: UIViewController {
     
     @IBAction func forgotPasswordButton(_ sender: UIButton) {
         let alert = UIAlertController(title: LoginConstants.forgotPasswordTitle, message: LoginConstants.forgotPasswordMessage, preferredStyle: .alert)
+        
         let sendEmail = UIAlertAction(title: LoginConstants.sendEmail, style: .default) { action in
             let emailEntry = alert.textFields![0].text
             if (emailEntry!.isEmpty) {
@@ -51,12 +56,39 @@ class LoginViewController: UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
+    @IBAction func registerButton(_ sender: UIButton) {
+        let alert = UIAlertController(title: LoginConstants.confirmRegistrationTitle, message: LoginConstants.confirmRegistrationMessage, preferredStyle: .alert)
+        
+        let submit = UIAlertAction(title: LoginConstants.submit, style: .default) { action in
+            let confirmationCode = "568925"
+            let confirmationCodeEntry = alert.textFields![0].text
+            if (confirmationCodeEntry == confirmationCode) {
+                self.performSegue(withIdentifier: "registerUser", sender: self)
+            } else {
+                return
+            }
+        }
+        let cancel = UIAlertAction(title: LoginConstants.cancel, style: .cancel)
+        
+        alert.addTextField(configurationHandler: nil)
+        alert.addAction(submit)
+        alert.addAction(cancel)
+        present(alert, animated: true, completion: nil)
+    }
+    
     @IBAction func unwindFromDirectory(segue: UIStoryboardSegue) {
         
     }
     
     @IBAction func unwindFromRegistration(segue: UIStoryboardSegue) {
         
+    }
+    
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        if (identifier == "registerUser") {
+            return false
+        }
+        return true
     }
     
     // View Controller Life Cycle Methods
