@@ -125,19 +125,55 @@
         <!--Directory-->
         <scene sceneID="4Sh-Nb-Rzk">
             <objects>
-                <tableViewController id="yyd-sF-orv" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="07z-Js-h4J">
+                <tableViewController id="yyd-sF-orv" customClass="DirectoryTableViewController" customModule="fbcmenifeeChildrens" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" sectionIndexMinimumDisplayRowCount="1" allowsSelection="NO" rowHeight="80" sectionHeaderHeight="28" sectionFooterHeight="28" id="07z-Js-h4J">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="DZM-EQ-JKq">
-                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="cell" rowHeight="80" id="DZM-EQ-JKq" customClass="DirectoryTableViewCell" customModule="fbcmenifeeChildrens" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="28" width="375" height="80"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="DZM-EQ-JKq" id="YSP-zD-tZ6">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="79"/>
                                     <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="dCX-fp-jbj">
+                                            <rect key="frame" x="8" y="0.0" width="359" height="79.5"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="David Anglin" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AZ6-vZ-wSm">
+                                                    <rect key="frame" x="104.5" y="0.0" width="150.5" height="26.5"/>
+                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="25"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="703-489-1501" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sKc-3I-aiL">
+                                                    <rect key="frame" x="114" y="26.5" width="131" height="26.5"/>
+                                                    <fontDescription key="fontDescription" type="italicSystem" pointSize="20"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="DAAnglin6389@gmail.com" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" minimumFontSize="15" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="w2D-Fp-BDD">
+                                                    <rect key="frame" x="58.5" y="53" width="242.5" height="26.5"/>
+                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleTitle3"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </stackView>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="trailing" secondItem="dCX-fp-jbj" secondAttribute="trailing" constant="8" id="Dmv-KO-YXo"/>
+                                        <constraint firstItem="dCX-fp-jbj" firstAttribute="top" secondItem="YSP-zD-tZ6" secondAttribute="top" id="Dtl-ub-KfC"/>
+                                        <constraint firstAttribute="bottom" secondItem="dCX-fp-jbj" secondAttribute="bottom" id="NBC-Vw-2xZ"/>
+                                        <constraint firstItem="dCX-fp-jbj" firstAttribute="leading" secondItem="YSP-zD-tZ6" secondAttribute="leading" constant="8" id="eDg-Lw-BQw"/>
+                                    </constraints>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="emailLabel" destination="w2D-Fp-BDD" id="tSa-Rc-GfO"/>
+                                    <outlet property="nameLabel" destination="AZ6-vZ-wSm" id="688-Eh-dtR"/>
+                                    <outlet property="phoneLabel" destination="sKc-3I-aiL" id="VWd-eb-eF3"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -151,7 +187,7 @@
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="zmr-8e-zgN"/>
                     </toolbarItems>
                     <navigationItem key="navigationItem" title="Directory" id="VHA-pJ-ixw">
-                        <barButtonItem key="leftBarButtonItem" title="Logout" id="jGX-dD-lHR">
+                        <barButtonItem key="rightBarButtonItem" title="Logout" id="jGX-dD-lHR">
                             <connections>
                                 <segue destination="bQf-SK-PSx" kind="unwind" unwindAction="unwindFromDirectoryWithSegue:" id="Szr-RW-pRF"/>
                             </connections>
@@ -161,7 +197,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eMk-F1-hhB" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="bQf-SK-PSx" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="674" y="-556"/>
+            <point key="canvasLocation" x="1076" y="-427"/>
         </scene>
         <!--Registration-->
         <scene sceneID="jIZ-D7-k0I">

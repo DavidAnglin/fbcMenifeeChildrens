@@ -60,7 +60,7 @@ class LoginViewController: UIViewController {
         let alert = UIAlertController(title: LoginConstants.confirmRegistrationTitle, message: LoginConstants.confirmRegistrationMessage, preferredStyle: .alert)
         
         let submit = UIAlertAction(title: LoginConstants.submit, style: .default) { action in
-            let confirmationCode = "568925"
+            let confirmationCode = "123456"
             let confirmationCodeEntry = alert.textFields![0].text
             if (confirmationCodeEntry == confirmationCode) {
                 self.performSegue(withIdentifier: "registerUser", sender: self)
