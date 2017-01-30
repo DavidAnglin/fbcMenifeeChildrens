@@ -7,11 +7,16 @@
 //
 
 import UIKit
+import Firebase
 
 class MasterViewController: UITableViewController {
 
+    let toDirectory = "toDirectory"
+    
+    
     var detailViewController: DetailViewController? = nil
     var objects = [Any]()
+    
 
 
     override func viewDidLoad() {
@@ -24,6 +29,12 @@ class MasterViewController: UITableViewController {
         if let split = self.splitViewController {
             let controllers = split.viewControllers
             self.detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
+        }
+        
+        FIRAuth.auth()!.addStateDidChangeListener() { auth, user in
+            if user != nil {
+                self.performSegue(withIdentifier: self.toDirectory, sender: nil)
+            }
         }
     }
 

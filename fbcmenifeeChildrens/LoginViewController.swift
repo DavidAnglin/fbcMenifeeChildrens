@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class LoginViewController: UIViewController {
     
@@ -24,7 +25,8 @@ class LoginViewController: UIViewController {
     // Private Constants
     
     // Public Constants
-    
+    let toDirectory = "toDirectory"
+
     // Private Variables
     
     // Public Variables
@@ -33,9 +35,30 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     
-    
     // IBActions
     @IBAction func signInButton(_ sender: UIButton) {
+        guard let email = emailTextField.text?.trimmingCharacters(in: NSCharacterSet.whitespaces), !email.isEmpty, verifyInput(input: email) else {
+            presentAlert(title: "Invalid Input", message: "Please enter email.")
+            return
+        }
+        
+        guard let password = passwordTextField.text?.trimmingCharacters(in: NSCharacterSet.whitespaces), !password.isEmpty, verifyInput(input: password) else {
+            presentAlert(title: "Invalid Input", message: "Please enter password")
+            return
+        }
+        
+        if (verifyEmail(email: email)) {
+            FIRAuth.auth()!.signIn(withEmail: email, password: password) { (user, error) in
+                
+                if (error == nil) {
+                    self.emailTextField.text = ""
+                    self.passwordTextField.text = ""
+                    self.performSegue(withIdentifier: self.toDirectory, sender: nil)
+                } else if let error = error {
+                    self.presentAlert(title: "Error", message: error.localizedDescription)
+                }
+            }
+        }
     }
     
     @IBAction func forgotPasswordButton(_ sender: UIButton) {
@@ -46,7 +69,13 @@ class LoginViewController: UIViewController {
             if (emailEntry!.isEmpty) {
                 return
             }
-        
+            
+            FIRAuth.auth()?.sendPasswordReset(withEmail: emailEntry!) { (error) in
+                if let error = error {
+                    self.presentAlert(title: "Error", message: error.localizedDescription)
+                    return
+                }
+            }
         }
         let cancelAction = UIAlertAction(title: LoginConstants.cancel, style: .cancel)
         
@@ -87,6 +116,8 @@ class LoginViewController: UIViewController {
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
         if (identifier == "registerUser") {
             return false
+        } else if (identifier == toDirectory) {
+            return false
         }
         return true
     }
@@ -99,19 +130,41 @@ class LoginViewController: UIViewController {
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-
+        
+//        FIRAuth.auth()!.addStateDidChangeListener() { auth, user in
+//            if user != nil {
+//                self.performSegue(withIdentifier: self.toDirectory, sender: nil)
+//            }
+//        }
     }
 
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    // Verification Functions
+    
+    func verifyInput(input: String) -> Bool {
+        if (!input.isEmpty) {
+            return true
+        } else {
+            return false
+        }
     }
-    */
+    
+    func verifyEmail(email: String) -> Bool {
+        if (email.isEmail()) {
+            return true
+        } else {
+            presentAlert(title: "Incorrect Email", message: "Please enter valid email!")
+            return false
+        }
+    }
+    
+    func presentAlert(title: String, message: String) {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            alert.addAction(cancelAction)
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
     
     // Notifcation Handling
     
@@ -136,9 +189,4 @@ class LoginViewController: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillHide, object: nil)
     }
-    
-    
-    
-    
-    
 }
