@@ -7,48 +7,69 @@
 //
 
 import UIKit
+import Firebase
 
 class LoginViewController: UIViewController {
     
-    fileprivate struct LoginConstants {
-        fileprivate static let forgotPasswordTitle = "Forgot Password?"
-        fileprivate static let forgotPasswordMessage = " Please enter email to reset password."
-        fileprivate static let sendEmail = "Send Email"
-        fileprivate static let cancel = "Cancel"
-        
-        fileprivate static let confirmRegistrationTitle = "Confirm FBC Menifee Servant"
-        fileprivate static let confirmRegistrationMessage = "Please enter registration code"
-        fileprivate static let submit = "Submit"
-    }
+    // MARK: - Private Structs -
     
-    // Private Constants
+    // MARK: - Private Constants -
     
-    // Public Constants
+    // MARK: - Public Constants -
+
+    // MARK: - Private Variables -
     
-    // Private Variables
+    // MARK: - Public Variables -
     
-    // Public Variables
-    
-    // IBOutlets
+    // MARK: - IBOutlets -
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     
-    
-    // IBActions
+    // MARK: - IBActions -
     @IBAction func signInButton(_ sender: UIButton) {
+        guard let email = emailTextField.text?.trimmingCharacters(in: NSCharacterSet.whitespaces), !email.isEmpty, VerificationHelpers.verifyInput(input: email) else {
+            showAlert(Constants.AlertConstants.invalidInput, message: Constants.AlertConstants.enterEmail)
+            return
+        }
+        
+        guard let password = passwordTextField.text?.trimmingCharacters(in: NSCharacterSet.whitespaces), !password.isEmpty, VerificationHelpers.verifyInput(input: password) else {
+            showAlert(Constants.AlertConstants.invalidInput, message: Constants.AlertConstants.enterPassword)
+            return
+        }
+        
+        if (VerificationHelpers.verifyEmail(email: email)) {
+            FIRAuth.auth()!.signIn(withEmail: email, password: password) { (user, error) in
+                
+                if (error == nil) {
+                    self.emailTextField.text = ""
+                    self.passwordTextField.text = ""
+                    self.performSegue(withIdentifier: Constants.SegueConstants.toDirectory, sender: nil)
+                } else if let error = error {
+                    self.showAlert(Constants.AlertConstants.error, message: error.localizedDescription)
+                }
+            }
+        } else {
+            showAlert(Constants.AlertConstants.incorrectEmail, message: Constants.AlertConstants.enterEmail)
+        }
     }
     
     @IBAction func forgotPasswordButton(_ sender: UIButton) {
-        let alert = UIAlertController(title: LoginConstants.forgotPasswordTitle, message: LoginConstants.forgotPasswordMessage, preferredStyle: .alert)
+        let alert = UIAlertController(title: Constants.LoginViewControllerConstants.forgotPasswordTitle, message: Constants.LoginViewControllerConstants.forgotPasswordMessage, preferredStyle: .alert)
         
-        let sendEmail = UIAlertAction(title: LoginConstants.sendEmail, style: .default) { action in
+        let sendEmail = UIAlertAction(title: Constants.LoginViewControllerConstants.sendEmail, style: .default) { action in
             let emailEntry = alert.textFields![0].text
             if (emailEntry!.isEmpty) {
                 return
             }
-        
+            
+            FIRAuth.auth()?.sendPasswordReset(withEmail: emailEntry!) { (error) in
+                if let error = error {
+                    self.showAlert(Constants.AlertConstants.error, message: error.localizedDescription)
+                    return
+                }
+            }
         }
-        let cancelAction = UIAlertAction(title: LoginConstants.cancel, style: .cancel)
+        let cancelAction = UIAlertAction(title: Constants.LoginViewControllerConstants.cancel, style: .cancel)
         
         alert.addTextField(configurationHandler: nil)
         alert.addAction(sendEmail)
@@ -57,18 +78,18 @@ class LoginViewController: UIViewController {
     }
     
     @IBAction func registerButton(_ sender: UIButton) {
-        let alert = UIAlertController(title: LoginConstants.confirmRegistrationTitle, message: LoginConstants.confirmRegistrationMessage, preferredStyle: .alert)
+        let alert = UIAlertController(title: Constants.LoginViewControllerConstants.confirmRegistrationTitle, message: Constants.LoginViewControllerConstants.confirmRegistrationMessage, preferredStyle: .alert)
         
-        let submit = UIAlertAction(title: LoginConstants.submit, style: .default) { action in
-            let confirmationCode = "568925"
+        let submit = UIAlertAction(title: Constants.LoginViewControllerConstants.submit, style: .default) { action in
+            let confirmationCode = "123456"
             let confirmationCodeEntry = alert.textFields![0].text
             if (confirmationCodeEntry == confirmationCode) {
-                self.performSegue(withIdentifier: "registerUser", sender: self)
+                self.performSegue(withIdentifier: Constants.SegueConstants.registerUser, sender: self)
             } else {
                 return
             }
         }
-        let cancel = UIAlertAction(title: LoginConstants.cancel, style: .cancel)
+        let cancel = UIAlertAction(title: Constants.LoginViewControllerConstants.cancel, style: .cancel)
         
         alert.addTextField(configurationHandler: nil)
         alert.addAction(submit)
@@ -84,14 +105,7 @@ class LoginViewController: UIViewController {
         
     }
     
-    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
-        if (identifier == "registerUser") {
-            return false
-        }
-        return true
-    }
-    
-    // View Controller Life Cycle Methods
+    // MARK: - View Controller Life Cycle Methods -
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -99,22 +113,26 @@ class LoginViewController: UIViewController {
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-
+        
+    }
+    
+    // MARK: - deinit -
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillHide, object: nil)
     }
 
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    // MARK: - Segue Functions -
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        if (identifier == Constants.SegueConstants.registerUser) {
+            return false
+        } else if (identifier == Constants.SegueConstants.toDirectory) {
+            return false
+        }
+        return true
     }
-    */
     
-    // Notifcation Handling
-    
+    // MARK: - Notifcation Handling -
     func keyboardWillShow(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
             if self.view.frame.origin.y == 0 {
@@ -130,15 +148,4 @@ class LoginViewController: UIViewController {
             }
         }
     }
-    
-    // deInit
-    deinit {
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-    }
-    
-    
-    
-    
-    
 }
