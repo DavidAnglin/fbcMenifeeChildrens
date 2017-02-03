@@ -27,8 +27,8 @@ class ScheduleViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
             
-        let schedule = "schedule.pdf"
-        let scheduleURL = FIRStorage.storage().reference(forURL: "gs://fbcmenifee-kids.appspot.com").child(schedule)
+        let schedule = Constants.ScheduleConstants.schedulePDF
+        let scheduleURL = FIRStorage.storage().reference(forURL: Constants.ScheduleConstants.schedulePDF).child(schedule)
         
         scheduleURL.downloadURL { url, error in
             if let error = error {
