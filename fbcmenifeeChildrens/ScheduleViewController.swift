@@ -12,7 +12,7 @@ import Firebase
 
 class ScheduleViewController: UIViewController {
     
-    var scheduleView: WKWebView!
+    fileprivate var scheduleView: WKWebView!
     
     override func loadView() {
         let preferences = WKPreferences()
@@ -21,22 +21,36 @@ class ScheduleViewController: UIViewController {
         configuration.preferences = preferences
         
         scheduleView = WKWebView(frame: .zero, configuration: configuration)
+        self.scheduleView.navigationDelegate = self
         view = scheduleView
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-            
-        let schedule = Constants.ScheduleConstants.schedulePDF
-        let scheduleURL = FIRStorage.storage().reference(forURL: Constants.ScheduleConstants.schedulePDF).child(schedule)
         
-        scheduleURL.downloadURL { url, error in
-            if let error = error {
-                print(error.localizedDescription)
-            } else {
-                let request = NSURLRequest(url: url!)
-                self.scheduleView.load(request as URLRequest)
+        let schedule = Constants.ScheduleConstants.schedulePDF
+        let scheduleURL = FIRStorage.storage().reference(forURL: Constants.ScheduleConstants.storageURL).child(schedule)
+        
+        DispatchQueue.main.async {
+            scheduleURL.downloadURL { url, error in
+                if let error = error {
+                    self.showAlert(error.localizedDescription)
+                } else {
+                    let request = NSURLRequest(url: url!)
+                    self.scheduleView.load(request as URLRequest)
+                }
             }
         }
+    }
+}
+
+extension ScheduleViewController: WKNavigationDelegate {
+    
+    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
+    }
+    
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        UIApplication.shared.isNetworkActivityIndicatorVisible = false
     }
 }

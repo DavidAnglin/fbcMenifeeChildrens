@@ -11,15 +11,10 @@ import Firebase
 
 class LoginViewController: UIViewController {
     
-    // MARK: - Private Structs -
-    
-    // MARK: - Private Constants -
-    
-    // MARK: - Public Constants -
-
-    // MARK: - Private Variables -
-    
     // MARK: - Public Variables -
+    fileprivate var codeRef: FIRDatabaseReference!
+    fileprivate var servantRef: FIRDatabaseReference!
+    fileprivate var registrationCode: String! = ""
     
     // MARK: - IBOutlets -
     @IBOutlet weak var emailTextField: UITextField!
@@ -81,24 +76,20 @@ class LoginViewController: UIViewController {
         let alert = UIAlertController(title: Constants.LoginViewControllerConstants.confirmRegistrationTitle, message: Constants.LoginViewControllerConstants.confirmRegistrationMessage, preferredStyle: .alert)
         
         let submit = UIAlertAction(title: Constants.LoginViewControllerConstants.submit, style: .default) { action in
-            let confirmationCode = "123456"
             let confirmationCodeEntry = alert.textFields![0].text
-            if (confirmationCodeEntry == confirmationCode) {
+            if (confirmationCodeEntry == self.registrationCode) {
                 self.performSegue(withIdentifier: Constants.SegueConstants.registerUser, sender: self)
             } else {
                 return
             }
         }
+        
         let cancel = UIAlertAction(title: Constants.LoginViewControllerConstants.cancel, style: .cancel)
         
         alert.addTextField(configurationHandler: nil)
         alert.addAction(submit)
         alert.addAction(cancel)
         present(alert, animated: true, completion: nil)
-    }
-    
-    @IBAction func unwindFromDirectory(segue: UIStoryboardSegue) {
-        
     }
     
     @IBAction func unwindFromRegistration(segue: UIStoryboardSegue) {
@@ -109,11 +100,18 @@ class LoginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        codeRef = FIRDatabase.database().reference(withPath: Constants.LoginViewControllerConstants.registrationCode)
+        servantRef = FIRDatabase.database().reference(withPath: Constants.DirectoryConstants.servantRef)
+
         self.hideKeyboardWhenTappedAround()
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        getCode()
     }
     
     // MARK: - deinit -
@@ -146,6 +144,16 @@ class LoginViewController: UIViewController {
             if self.view.frame.origin.y != 0{
                 self.view.frame.origin.y += keyboardSize.height
             }
+        }
+    }
+    
+    fileprivate func getCode() {
+        codeRef.observeSingleEvent(of: .value, with: { (snapshot) in
+            // Get user value
+            let value = snapshot.value as? NSDictionary
+            self.registrationCode = value?["code"] as? String ?? ""
+        }) { (error) in
+            self.showAlert(error.localizedDescription)
         }
     }
 }

@@ -13,21 +13,22 @@ class DirectoryTableViewController: UITableViewController {
     
     // MARK: - Private Constants -
     // MARK: - Public Constants -
-    let messageComposer = MessageComposer()
-    let usersRef = FIRDatabase.database().reference(withPath: Constants.DirectoryConstants.userRef)
-    let servantRef = FIRDatabase.database().reference(withPath: Constants.DirectoryConstants.servantRef)
+    fileprivate let messageComposer = MessageComposer()
+    fileprivate let usersRef = FIRDatabase.database().reference(withPath: Constants.DirectoryConstants.userRef)
+    fileprivate let servantRef = FIRDatabase.database().reference(withPath: Constants.DirectoryConstants.servantRef)
     
     // MARK: - Private Variables -
     // MARK: - Public Variables -
-    var servantList = [Servants]()
+    fileprivate var servantList = [Servants]()
+    fileprivate weak var loadingIndicatorView: UIActivityIndicatorView!
     
     // MARK: - IBActions -
     @IBAction func logout(_ sender: UIBarButtonItem) {
         do {
             try FIRAuth.auth()!.signOut()
-            dismiss(animated: true, completion: nil)
+            self.view.window!.rootViewController?.dismiss(animated: false, completion: nil)
         } catch {
-          print(error.localizedDescription)
+            showAlert(error.localizedDescription)
         }
     }
     
@@ -38,6 +39,13 @@ class DirectoryTableViewController: UITableViewController {
     // MARK: - View Controller Lifecycle -
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let loadingIndicatorView = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.gray)
+        
+        tableView.backgroundView = loadingIndicatorView
+        tableView.separatorStyle = UITableViewCellSeparatorStyle.none
+        
+        self.loadingIndicatorView = loadingIndicatorView
         
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 50
@@ -54,7 +62,6 @@ class DirectoryTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print(servantList.count)
         return servantList.count
     }
 
@@ -94,16 +101,6 @@ class DirectoryTableViewController: UITableViewController {
         // Return false if you do not want the specified item to be editable.
         return true
     }
-    
-//    // Override to support editing the table view.
-//    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-//        if editingStyle == .delete {
-//            // Delete the row from the data source
-//            tableView.deleteRows(at: [indexPath], with: .fade)
-//        } else if editingStyle == .insert {
-//            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-//        }    
-//    }
     
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         
@@ -160,17 +157,22 @@ class DirectoryTableViewController: UITableViewController {
     }
     
     // MARK: - Load Data -
-    func loadData() {
+    fileprivate func loadData() {
+        loadingIndicatorView.startAnimating()
         self.servantRef.queryOrdered(byChild:Constants.ServantConstants.lastName).observe(.value, with: { snapshot in
-            var people: [Servants] = []
-            for servant in snapshot.children {
-                let servant = Servants(snapshot: servant as! FIRDataSnapshot)
-                people.append(servant)
+            
+            DispatchQueue.main.async {
+                var people: [Servants] = []
+                for servant in snapshot.children {
+                    let servant = Servants(snapshot: servant as! FIRDataSnapshot)
+                    people.append(servant)
+                }
+                
+                self.servantList = people
+                self.loadingIndicatorView.stopAnimating()
+                self.tableView.separatorStyle = UITableViewCellSeparatorStyle.singleLine
+                self.tableView.reloadData()
             }
-            
-            self.servantList = people
-            self.tableView.reloadData()
-            
         })
     }
 

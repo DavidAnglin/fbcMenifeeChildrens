@@ -7,21 +7,21 @@
 	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
 	<string>ca-app-pub-3940256099942544/4411468910</string>
 	<key>CLIENT_ID</key>
-	<string>487516354608-gefodi163a91cqkvp5ctakb1t922u0df.apps.googleusercontent.com</string>
+	<string>893067340126-gkb5ong0u3clhhoscfmogd3mq7ed9nar.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.487516354608-gefodi163a91cqkvp5ctakb1t922u0df</string>
+	<string>com.googleusercontent.apps.893067340126-gkb5ong0u3clhhoscfmogd3mq7ed9nar</string>
 	<key>API_KEY</key>
-	<string>AIzaSyA_TgKZ6dJsHMbmYkMh8lvHtaZ75E3pWH4</string>
+	<string>AIzaSyAt186yWddcbZELDiFt2gGgOLiacKZbl10</string>
 	<key>GCM_SENDER_ID</key>
-	<string>487516354608</string>
+	<string>893067340126</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>davidanglin.fbcmenifeeChildrens</string>
 	<key>PROJECT_ID</key>
-	<string>fbcmenifee-kids</string>
+	<string>fbcmenifeekids-eebb7</string>
 	<key>STORAGE_BUCKET</key>
-	<string>fbcmenifee-kids.appspot.com</string>
+	<string>fbcmenifeekids-eebb7.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<true/>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -33,8 +33,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true/>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:487516354608:ios:bff80e0902609aa3</string>
+	<string>1:893067340126:ios:bff80e0902609aa3</string>
 	<key>DATABASE_URL</key>
-	<string>https://fbcmenifee-kids.firebaseio.com</string>
+	<string>https://fbcmenifeekids-eebb7.firebaseio.com</string>
 </dict>
 </plist>

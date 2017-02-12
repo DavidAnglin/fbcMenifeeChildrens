@@ -35,6 +35,14 @@ class VerificationHelpers {
         }
     }
     
+    static func verifyPasswordLength(password: String, confirmPassword: String) -> Bool {
+        if ((password.characters.count > 3) || (confirmPassword.characters.count > 3)) {
+            return true
+        } else {
+            return false
+        }
+    }
+    
     static func verifyEmail(email: String, confirmEmail: String) -> Bool {
         if (email.isEmail() && confirmEmail.isEmail()) {
             if (email == confirmEmail) {
