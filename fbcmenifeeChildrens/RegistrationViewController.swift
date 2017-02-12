@@ -11,12 +11,8 @@ import Firebase
 
 class RegistrationViewController: UIViewController {
     
-    // MARK: - Private Constants -
     // MARK: - Public Constants -
-    let usersRef = FIRDatabase.database().reference(withPath: "users")
-    
-    // MARK: - Private Variables -
-    // MARK: - Public Variables -
+    fileprivate let usersRef = FIRDatabase.database().reference()
     
     // MARK: - IBOutlets -
     @IBOutlet weak var emailTextField: UITextField!
@@ -28,13 +24,7 @@ class RegistrationViewController: UIViewController {
     @IBAction func registerButton(_ sender: UIButton) {
         registerUser()
     }
-    
-    // MARK: - View Controller Lifecycle -
-    override func viewDidLoad() {
-        super.viewDidLoad()
 
-    }
-    
     // MARK: - Segue Functions -
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
         if (identifier == Constants.SegueConstants.registerToDirectory) {
@@ -44,7 +34,7 @@ class RegistrationViewController: UIViewController {
     }
     
     // MARK: - Register User -
-    func registerUser() {
+    fileprivate func registerUser() {
         guard let email = emailTextField.text?.trimmingCharacters(in: NSCharacterSet.whitespaces), !email.isEmpty, VerificationHelpers.verifyInput(input: email) else {
             showAlert(Constants.AlertConstants.invalidInput, message: Constants.AlertConstants.enterEmail)
             return
@@ -67,22 +57,30 @@ class RegistrationViewController: UIViewController {
         
         if (VerificationHelpers.verifyEmail(email: email, confirmEmail: confirmEmail)) {
             if (VerificationHelpers.verifyPassword(password: password, confirmPassword: confirmPassword)) {
-                FIRAuth.auth()?.createUser(withEmail: email, password: password) { (user, error) in
-                    if (error == nil) {
-                        let successAlert = UIAlertController(title: Constants.AlertConstants.success, message: Constants.AlertConstants.createdAccount, preferredStyle: .alert)
-                        let okAction = UIAlertAction(title: Constants.AlertConstants.ok, style: .default) { action in
-                            if error == nil {
-                                FIRAuth.auth()!.signIn(withEmail: email,
-                                                       password: password)
+                if (VerificationHelpers.verifyPasswordLength(password: password, confirmPassword: confirmPassword)) {
+                    FIRAuth.auth()?.createUser(withEmail: email, password: password) { (user, error) in
+                        if (error == nil) {
+                            let successAlert = UIAlertController(title: Constants.AlertConstants.success, message: Constants.AlertConstants.createdAccount, preferredStyle: .alert)
+                            let okAction = UIAlertAction(title: Constants.AlertConstants.ok, style: .default) { action in
+                                if error == nil {
+                                    self.usersRef.child("users").child(user!.uid).setValue([
+                                        "email" : email
+                                        ])
+                                    
+                                    FIRAuth.auth()!.signIn(withEmail: email,
+                                                           password: password)
+                                }
+                                self.performSegue(withIdentifier: Constants.SegueConstants.registerToDirectory, sender: self)
                             }
-                            self.performSegue(withIdentifier: Constants.SegueConstants.registerToDirectory, sender: self)
+                            
+                            successAlert.addAction(okAction)
+                            self.present(successAlert, animated: true, completion: nil)
+                        } else {
+                            self.showAlert(Constants.AlertConstants.error, message: error?.localizedDescription)
                         }
-                        
-                        successAlert.addAction(okAction)
-                        self.present(successAlert, animated: true, completion: nil)
-                    } else {
-                        self.showAlert(Constants.AlertConstants.error, message: error?.localizedDescription)
                     }
+                } else {
+                    showAlert(Constants.AlertConstants.passwordLength, message: Constants.AlertConstants.passwordRequirement)
                 }
             } else {
                 showAlert(Constants.AlertConstants.passwordMismatch, message: Constants.AlertConstants.passwordRule)

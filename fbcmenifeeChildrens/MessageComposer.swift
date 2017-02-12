@@ -16,7 +16,6 @@ class MessageComposer: NSObject {
     }
     
     func canSendEmail() -> Bool {
-        print(MFMailComposeViewController.canSendMail())
         return MFMailComposeViewController.canSendMail()
     }
     

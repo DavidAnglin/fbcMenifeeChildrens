@@ -9,7 +9,7 @@
 import Foundation
 
 struct Constants {
-    static let base_url = "https://fbcmenifee-kids.firebaseio.com/"
+    static let base_url = "https://fbcmenifeekids-eebb7.firebaseio.com"
     
     struct ServantConstants {
         static let firstName = "first_name"
@@ -40,6 +40,8 @@ struct Constants {
         static let ok = "Ok"
         static let cancel = "Cancel"
         static let createdAccount = "You successfully created an account"
+        static let passwordLength = "Password Length too Short"
+        static let passwordRequirement = "Password must be more than 3 characters long"
     }
     
     struct LoginViewControllerConstants {
@@ -51,11 +53,13 @@ struct Constants {
         static let confirmRegistrationTitle = "Confirm FBC Menifee Servant"
         static let confirmRegistrationMessage = "Please enter registration code"
         static let submit = "Submit"
+        
+        static let registrationCode = "registerCode"
     }
     
     struct ScheduleConstants {
         static let schedulePDF = "schedule.pdf"
-        static let storageURL = "gs://fbcmenifee-kids.appspot.com"
+        static let storageURL = "gs://fbcmenifeekids-eebb7.appspot.com"
     }
     
     struct DirectoryConstants {
